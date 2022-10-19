@@ -1,20 +1,21 @@
-import { convertPokeApiDetailToPokemon } from './utils';
+import { convertPokeApiDetailToPokemon } from './utils.js';
 
-function getPokemonDetail(pokemon) {
-    return fetch(pokemon.url)
-        .then((response) => response.json())
-        .then(convertPokeApiDetailToPokemon)
+async function getPokemonDetail(pokemon) {
+  const response = await fetch(pokemon.url);
+  const json = await response.json();
+  const objectPokemon = convertPokeApiDetailToPokemon(json);
+
+  return objectPokemon;
 }
 
-function getPokemons(offset = 0, limit = 5) {
-    const url = `https://pokeapi.co/api/v2/pokemon?offset=${offset}&limit=${limit}`;
+async function getPokemons(offset = 0, limit = 5) {
+  const url = `https://pokeapi.co/api/v2/pokemon?offset=${offset}&limit=${limit}`;
 
-    return fetch(url)
-        .then((response) => response.json())
-        .then((jsonBody) => jsonBody.results)
-        .then((pokemons) => pokemons.map(getPokemonDetail))
-        .then((detailRequests) => Promise.all(detailRequests))
-        .then((pokemonsDetails) => pokemonsDetails)
+  const response = await fetch(url);
+  const { results } = await response.json();
+  const pokemons = await Promise.all(results.map(getPokemonDetail));
+
+  return pokemons;
 }
 
 export {
