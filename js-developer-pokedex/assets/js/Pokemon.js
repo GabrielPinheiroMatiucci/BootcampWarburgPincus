@@ -4,4 +4,5 @@ class Pokemon {
   type;
   types = [];
   photo;
-}
+};
+export default Pokemon;
